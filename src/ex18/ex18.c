@@ -15,6 +15,37 @@ void die(const char *message)
 }
 
 typedef int (*compare_cb)(int a, int b);
+typedef int *(*sort_cb)(int *numbers, int count, compare_cb cmp);
+
+int *insertion_sort(int *numbers, int count, compare_cb cmp)
+{
+    int i = 0;
+    int tmp;
+    int holePos;
+    int *target = malloc(count * sizeof(int));
+
+    if (!target) die("Memory error.");
+
+    memcpy(target, numbers, count * sizeof(int));
+
+    for (; i < count; ++i) {
+        tmp = target[i];
+        holePos = i;
+
+        // original algorithm:
+        //while (holePos > 0 && tmp < target[holePos-1]) {
+
+        // modified to use comparison callback:
+        while (holePos > 0 && cmp(target[holePos-1], tmp) > 0) {
+            target[holePos] = target[holePos-1];
+            --holePos;
+        }
+
+        target[holePos] = tmp;
+    }
+
+    return target;
+}
 
 int *bubble_sort(int *numbers, int count, compare_cb cmp)
 {
@@ -59,10 +90,10 @@ int strange_order(int a, int b)
     return a % b;
 }
 
-void test_sorting(int *numbers, int count, compare_cb cmp)
+void test_sorting(int *numbers, int count, compare_cb cmp, sort_cb srt)
 {
     int i = 0;
-    int *sorted = bubble_sort(numbers, count, cmp);
+    int *sorted = srt(numbers, count, cmp);
 
     if (!sorted) die("Failed to sort as requested.");
 
@@ -89,9 +120,24 @@ int main(int argc, char *argv[])
         numbers[i] = atoi(inputs[i]);
     }
 
-    test_sorting(numbers, count, sorted_order);
-    test_sorting(numbers, count, reverse_order);
-    test_sorting(numbers, count, strange_order);
+    /* TODO
+    compare_cb comparators[] = {sorted_order, reverse_order, strange_order, NULL};
+    sort_cb sorters[] = {bubble_sort, insertion_sort, NULL};
+
+    i = 0;
+    while (comparators[i--]) {
+        printf("i:%d", i);
+        test_sorting(numbers, count, comparators[i], bubble_sort);
+    }
+    */
+
+    test_sorting(numbers, count, sorted_order, bubble_sort);
+    test_sorting(numbers, count, reverse_order, bubble_sort);
+    test_sorting(numbers, count, strange_order, bubble_sort);
+
+    test_sorting(numbers, count, sorted_order, insertion_sort);
+    test_sorting(numbers, count, reverse_order, insertion_sort);
+    test_sorting(numbers, count, strange_order, insertion_sort);
 
     free(numbers);
 
