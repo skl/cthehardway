@@ -28,6 +28,8 @@ int *insertion_sort(int *numbers, int count, compare_cb cmp)
 
     memcpy(target, numbers, count * sizeof(int));
 
+    printf("Insertion sorting...\t");
+
     for (; i < count; ++i) {
         tmp = target[i];
         holePos = i;
@@ -57,6 +59,8 @@ int *bubble_sort(int *numbers, int count, compare_cb cmp)
     if (!target) die("Memory error.");
 
     memcpy(target, numbers, count * sizeof(int));
+
+    printf("Bubble sorting...\t");
 
     for (i = 0; i < count; i++) {
         for (j = 0; j < count - 1; j++) {
@@ -111,33 +115,35 @@ int main(int argc, char *argv[])
 
     int count = argc - 1;
     int i = 0;
+    int j = 0;
     char **inputs = argv + 1;
 
     int *numbers = malloc(count * sizeof(int));
     if (!numbers) die("Memory error.");
 
+    printf("set {");
     for (i = 0; i < count; i++) {
         numbers[i] = atoi(inputs[i]);
+        if (i == count - 1) {
+            printf("%d", numbers[i]);
+        } else {
+            printf("%d,", numbers[i]);
+        }
     }
+    printf("}\n");
 
-    /* TODO
     compare_cb comparators[] = {sorted_order, reverse_order, strange_order, NULL};
     sort_cb sorters[] = {bubble_sort, insertion_sort, NULL};
 
     i = 0;
-    while (comparators[i--]) {
-        printf("i:%d", i);
-        test_sorting(numbers, count, comparators[i], bubble_sort);
+    while (comparators[i]) {
+        j = 0;
+        while (sorters[j]) {
+            test_sorting(numbers, count, comparators[i], sorters[j]);
+            ++j;
+        }
+        ++i;
     }
-    */
-
-    test_sorting(numbers, count, sorted_order, bubble_sort);
-    test_sorting(numbers, count, reverse_order, bubble_sort);
-    test_sorting(numbers, count, strange_order, bubble_sort);
-
-    test_sorting(numbers, count, sorted_order, insertion_sort);
-    test_sorting(numbers, count, reverse_order, insertion_sort);
-    test_sorting(numbers, count, strange_order, insertion_sort);
 
     free(numbers);
 
