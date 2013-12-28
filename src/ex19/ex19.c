@@ -14,7 +14,7 @@ int Monster_attack(void *self, int damage)
     monster->hit_points -= damage;
 
     if (monster->hit_points > 0) {
-        printf("It is still alive.\n");
+        printf("It is still alive. Health:%d%%\n", monster->hit_points * 10);
         return 0;
     } else {
         printf("It is dead!\n");
