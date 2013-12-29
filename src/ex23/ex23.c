@@ -1,6 +1,16 @@
 #include <stdio.h>
 #include <string.h>
+#include <sys/time.h>
+#include <sys/resource.h>
 #include "dbg.h"
+
+double get_time()
+{
+    struct timeval t;
+    struct timezone tzp;
+    gettimeofday(&t, &tzp);
+    return t.tv_sec + t.tv_usec * 1e-6;
+}
 
 int normal_copy(char *from, char *to, int count)
 {
@@ -78,29 +88,42 @@ int main(int argc, char *argv[])
     char from[1000] = {'a'};
     char to[1000] = {'c'};
     int rc = 0;
+    double start;
 
     memset(from, 'x', 1000);
     memset(to, 'y', 1000);
     check(valid_copy(to, 1000, 'y'), "Not initialised right.");
 
+    start = get_time();
     rc = normal_copy(from, to, 1000);
+    log_info("normal_copy():%f", get_time() - start);
+
     check(rc == 1000, "Normal copy failed: %d", rc);
     check(valid_copy(to, 1000, 'x'), "Normal copy failed.");
 
     memset(to, 'y', 1000);
 
+    start = get_time();
     memcpy(to, from, 1000);
+    log_info("memcpy():%f", get_time() - start);
+
     check(valid_copy(to, 1000, 'x'), "memcpy failed.");
 
     memset(to, 'y', 1000);
 
+    start = get_time();
     rc = duffs_device(from, to, 1000);
+    log_info("duffs_device():%f", get_time() - start);
+
     check(rc == 1000, "Duff's device failed: %d", rc);
     check(valid_copy(to, 1000, 'x'), "Duff's device failed.");
 
     memset(to, 'y', 1000);
 
+    start = get_time();
     rc = zeds_device(from, to, 1000);
+    log_info("zeds_device():%f", get_time() - start);
+
     check(rc == 1000, "Zed's device failed: %d", rc);
     check(valid_copy(to, 1000, 'x'), "Zed's device failed.");
 
