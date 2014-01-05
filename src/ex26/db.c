@@ -81,7 +81,7 @@ int DB_find(const char *url)
         res = 1;
     }
 
-error:
+error: //fallthrough
     if (data) {
         bdestroy(data);
     }
@@ -89,6 +89,8 @@ error:
     if (line) {
         bdestroy(line);
     }
+
+    return res;
 }
 
 int DB_init()
