@@ -3,7 +3,7 @@ LIBS=-ldl $(OPTLIBS)
 PREFIX?=/usr/local
 
 SOURCES=$(wildcard src /**/*.c src/*.c)
-OBJECTS=$(patsubst %.c,%.o,%(SOURCES))
+OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 
 TEST_SRC=$(wildcard tests/*_tests.c)
 TESTS=$(patsubst $.a,%.so,$(TARGET))
